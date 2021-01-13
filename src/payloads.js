@@ -2,35 +2,8 @@ module.exports = {
     confirmation: context => {
         return {
             channel: context.channel_id,
-            text: 'Helpdesk ticket created!',
-            blocks: JSON.stringify([
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: '*Helpdesk ticket created!*'
-                    }
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: `*Title*\n${context.title}\n\n*Description*\n${context.description}`
-                    }
-                },
-                {
-                    type: 'context',
-                    elements: [
-                        {
-                            type: 'mrkdwn',
-                            text: `*Urgency*: ${context.urgency}`
-                        }
-                    ]
-                }
-            ])
+            text: context.releaseNote,
+            mrkdwn: true
         }
     },
     modal: context => {
@@ -40,7 +13,7 @@ module.exports = {
                 type: 'modal',
                 title: {
                     type: 'plain_text',
-                    text: 'Submit a helpdesk ticket'
+                    text: 'Release Notes'
                 },
                 callback_id: 'submit-ticket',
                 submit: {
@@ -49,7 +22,7 @@ module.exports = {
                 },
                 blocks: [
                     {
-                        block_id: 'title_block',
+                        block_id: 'title',
                         type: 'input',
                         label: {
                             type: 'plain_text',
@@ -61,56 +34,164 @@ module.exports = {
                         },
                         hint: {
                             type: 'plain_text',
-                            text: '30 second summary of the problem'
+                            text: 'Title of the Release note'
                         }
                     },
                     {
-                        block_id: 'description_block',
+                        block_id: 'services',
                         type: 'input',
                         label: {
                             type: 'plain_text',
-                            text: 'Description'
+                            text: 'Services'
                         },
                         element: {
-                            action_id: 'description',
+                            action_id: 'services',
+                            type: 'plain_text_input',
+                            multiline: true
+                        }
+                    },
+                    {
+                        block_id: 'branch',
+                        type: 'input',
+                        label: {
+                            type: 'plain_text',
+                            text: 'Branch'
+                        },
+                        element: {
+                            action_id: 'branch',
+                            type: 'plain_text_input',
+                        }
+                    },
+                    {
+                        block_id: 'tickets',
+                        type: 'input',
+                        label: {
+                            type: 'plain_text',
+                            text: 'Tickets'
+                        },
+                        element: {
+                            action_id: 'tickets',
+                            type: 'plain_text_input',
+                            multiline: true
+                        }
+                    },
+                    {
+                        block_id: 'summary',
+                        type: 'input',
+                        label: {
+                            type: 'plain_text',
+                            text: 'Summary'
+                        },
+                        element: {
+                            action_id: 'summary',
                             type: 'plain_text_input',
                             multiline: true
                         },
                         optional: true
                     },
                     {
-                        block_id: 'urgency_block',
+                        block_id: 'changeset',
                         type: 'input',
                         label: {
                             type: 'plain_text',
-                            text: 'Importance'
+                            text: 'Changeset'
                         },
                         element: {
-                            action_id: 'urgency',
+                            action_id: 'changeset',
+                            type: 'plain_text_input',
+                            multiline: true
+                        }
+                    },
+                    {
+                        block_id: 'developers',
+                        type: 'input',
+                        label: {
+                            type: 'plain_text',
+                            text: 'Developers',
+                            emoji: true
+                        },
+                        element: {
+                            action_id: 'developers',
+                            type: 'multi_users_select',
+                            placeholder: {
+                                type: 'plain_text',
+                                text: 'Select all users'
+                            }
+                        }
+                    },
+                    {
+                        block_id: 'testers',
+                        type: 'input',
+                        label: {
+                            type: 'plain_text',
+                            text: 'Testers',
+                            emoji: true
+                        },
+                        element: {
+                            action_id: 'testers',
+                            type: 'multi_users_select',
+                            placeholder: {
+                                type: 'plain_text',
+                                text: 'Select all users'
+                            }
+                        }
+                    },
+                    {
+                        block_id: 'deployers',
+                        type: 'input',
+                        label: {
+                            type: 'plain_text',
+                            text: 'Deployers',
+                            emoji: true
+                        },
+                        element: {
+                            action_id: 'deployers',
+                            type: 'multi_users_select',
+                            placeholder: {
+                                type: 'plain_text',
+                                text: 'Select all users'
+                            }
+                        }
+                    },
+                    {
+                        block_id: 'status',
+                        type: 'input',
+                        label: {
+                            type: 'plain_text',
+                            text: 'Status'
+                        },
+                        element: {
+                            action_id: 'status',
                             type: 'static_select',
                             options: [
                                 {
                                     text: {
                                         type: "plain_text",
-                                        text: "High"
+                                        text: "Deployed"
                                     },
-                                    value: "high"
+                                    value: "Deployed"
                                 },
                                 {
                                     text: {
                                         type: "plain_text",
-                                        text: "Medium"
+                                        text: "Yet to Deploy"
                                     },
-                                    value: "medium"
-                                },
-                                {
-                                    text: {
-                                        type: "plain_text",
-                                        text: "Low"
-                                    },
-                                    value: "low"
+                                    value: "Yet to deploy"
                                 }
                             ]
+                        }
+                    },
+                    {
+                        block_id: 'comments',
+                        type: 'input',
+                        label: {
+                            type: 'plain_text',
+                            text: 'Comments'
+                        },
+                        element: {
+                            action_id: 'comments',
+                            type: 'plain_text_input',
+                            multiline: true
                         },
                         optional: true
                     }

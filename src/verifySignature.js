@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const timingSafeCompare = require('tsscmp');
 
 const isVerified = (req) => {
+  console.log('Testing Auth');
   const signature = req.headers['x-slack-signature'];
   const timestamp = req.headers['x-slack-request-timestamp'];
   const hmac = crypto.createHmac('sha256', process.env.SLACK_SIGNING_SECRET);
